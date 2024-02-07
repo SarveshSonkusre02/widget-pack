@@ -1,0 +1,27 @@
+{
+  "name": "electron-widget",
+  "version": "1.0.0",
+  "description": "Electron project with clock and Google search bar widgets",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run start-clock\" \"npm run start-google-search\"",
+    "start-clock": "cd clock && npm start",
+    "start-google-search": "cd google-search && npm start",
+    "build": "npm run build-clock && npm run build-google-search",
+    "build-clock": "cd clock && npm run build",
+    "build-google-search": "cd google-search && npm run build",
+    "dist": "electron-builder"
+  },
+  "keywords": [
+    "electron",
+    "widget"
+  ],
+  "author": "Sarvesh Sonkusre",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^28.2.1",
+    "electron-builder": "^22.14.13"
+  },
+  "_comment": "main package.json"
+}

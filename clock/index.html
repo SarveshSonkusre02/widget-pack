@@ -1,0 +1,132 @@
+<!--Clock/index.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixelated Clock</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: monospace; 
+    }
+
+    #drag-area {
+      background-color: #02020290;
+      color: #c8ff00;
+      font-family: monospace; /* Apply Arundati font */
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+      border-radius: 30px;
+    }
+
+    #clock {
+      font-size: 24px;
+      letter-spacing: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 255, 0, 0.8);
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 30px;
+    }
+
+    #date {
+      font-size: 14px;
+      letter-spacing: 5px;
+      text-shadow: 2px 2px 4px rgba(0, 255, 0, 0.8);
+      font-weight: bold;
+      padding-bottom: 10px;
+    }
+
+    #resize-handle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      background-color: #ffffff00;
+    }
+  </style>
+</head>
+<body>
+  <div id="drag-area">
+    <div id="clock"></div>
+    <div id="date"></div>
+    <div id="resize-handle"></div>
+  </div>
+
+  <script>
+    let offsetX, offsetY;
+    let isResizing = false;
+
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      const formattedTime = `${hours}:${minutes}:${seconds}`;
+      document.getElementById('clock').innerText = formattedTime;
+
+      const options = { month: 'short', day: 'numeric', year: 'numeric' };
+      const formattedDate = now.toLocaleDateString('en-US', options);
+      document.getElementById('date').innerText = formattedDate;
+    }
+
+    function handleMouseMove(e) {
+      if (isResizing) {
+        const newWidth = e.clientX - offsetX;
+        const newHeight = e.clientY - offsetY;
+
+        const minWidth = 200;
+        const minHeight = 100;
+
+        widgetWindow.setSize(Math.max(minWidth, newWidth), Math.max(minHeight, newHeight), true);
+
+        updateClockFontSize();
+      } else {
+        ipcRenderer.send('drag-window', { offsetX: e.screenX - offsetX, offsetY: e.screenY - offsetY });
+      }
+    }
+
+    function handleMouseUp() {
+      if (isResizing) {
+        isResizing = false;
+      } else {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      }
+    }
+
+    function updateClockFontSize() {
+      const clockDiv = document.getElementById('clock');
+      const clockDivWidth = clockDiv.offsetWidth;
+      clockDiv.style.fontSize = `${clockDivWidth / 10}px`;
+    }
+
+    document.getElementById('drag-area').addEventListener('mousedown', (e) => {
+      if (e.target.id === 'resize-handle') {
+        isResizing = true;
+        offsetX = e.clientX - widgetWindow.getBounds().width;
+        offsetY = e.clientY - widgetWindow.getBounds().height;
+      } else {
+        offsetX = e.screenX - widgetWindow.getBounds().x;
+        offsetY = e.screenY - widgetWindow.getBounds().y;
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      updateClockFontSize();
+    });
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>

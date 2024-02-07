@@ -1,0 +1,19 @@
+{
+    "name": "clock-widget",
+    "version": "1.0.0",
+    "description": "Clock widget for Electron",
+    "main": "main.js",
+    "scripts": {
+      "start": "electron .",
+      "build": "electron-packager . ClockWidget --platform=win32 --arch=x64 --out=dist"
+    },
+    "keywords": ["electron", "widget", "clock"],
+    "author": "Sarvesh Sonkusre",
+    "license": "MIT",
+    "dependencies": {
+      "electron": "^28.2.1"
+    },
+
+    "_comment": "clock/package.json"
+  }
+  
